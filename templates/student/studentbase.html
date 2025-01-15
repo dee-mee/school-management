@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en" dir="ltr">
+
+<head>
+  <meta charset="utf-8">
+  <style media="screen">
+    :root {
+      --bg-color: #22242A;
+      --text-color: #fff;
+      --sidebar-bg: #2f323a;
+      --sidebar-hover: #969696;
+      --accent-color: #19B3D3;
+    }
+
+    .superhero-theme {
+      --bg-color: #1a1f36; /* Dark Navy Blue */
+      --text-color: #ffffff; /* White */
+      --sidebar-bg: #0f4471; /* Deep Blue */
+      --sidebar-hover: #ffcc00; /* Vibrant Yellow */
+      --accent-color: #e63946; /* Bold Red */
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: "Gill Sans", sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-color);
+    }
+
+    header {
+      position: fixed;
+      background: var(--bg-color);
+      padding: 20px;
+      width: 100%;
+      z-index: 1;
+    }
+
+    .left_area h3 {
+      color: var(--text-color);
+      margin: 0px;
+      text-transform: uppercase;
+      font-size: 22px;
+      font-weight: 900;
+    }
+
+    .logout_btn {
+      padding: 5px;
+      background: var(--accent-color);
+      text-decoration: none;
+      float: right;
+      margin-top: -30px;
+      margin-right: 20px;
+      border-radius: 2px;
+      font-size: 15px;
+      font-weight: 600;
+      color: #fff;
+      transition: 0.5s;
+    }
+
+    .logout_btn:hover {
+      background: darkred;
+    }
+
+    .sidebar {
+      background: var(--sidebar-bg);
+      margin-top: 70px;
+      padding-top: 30px;
+      position: fixed;
+      left: 0;
+      width: 250px;
+      height: 100%;
+      transition: 0.5s;
+    }
+
+    .sidebar .profile_image {
+      width: 100px;
+      height: 100px;
+      border-radius: 100px;
+      margin-bottom: 10px;
+    }
+
+    .sidebar h4 {
+      color: var(--text-color);
+      margin-top: 0;
+    }
+
+    .sidebar a {
+      color: var(--text-color);
+      display: block;
+      width: 100%;
+      line-height: 60px;
+      text-decoration: none;
+      padding-left: 40px;
+      box-sizing: border-box;
+      transition: 0.5s;
+    }
+
+    .sidebar a:hover {
+      background: var(--sidebar-hover);
+      color: var(--bg-color);
+    }
+
+    label #sidebar_btn {
+      z-index: 1;
+      color: var(--text-color);
+      position: fixed;
+      cursor: pointer;
+      left: 300px;
+      font-size: 20px;
+      margin: 5px 0;
+      transition: 0.5s;
+    }
+
+    label #sidebar_btn:hover {
+      color: #ffcc00;
+    }
+
+    #check:checked~.sidebar {
+      left: -190px;
+    }
+
+    #check:checked~.sidebar a span {
+      display: none;
+    }
+
+    #check:checked~.sidebar a {
+      font-size: 20px;
+      margin-left: 170px;
+      width: 80px;
+    }
+
+    .content {
+      margin-left: 250px;
+      background: url(background.png) no-repeat;
+      background-position: center;
+      background-size: cover;
+      height: 100vh;
+      transition: 0.5s;
+    }
+
+    #check:checked~.content {
+      margin-left: 60px;
+    }
+
+    #check {
+      display: none;
+    }
+  </style>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css">
+</head>
+
+<body>
+  <input type="checkbox" id="check">
+  <!-- Header Area -->
+  <header>
+    <label for="check">
+      <i style="left: 200px; margin-top: 17px;" class="fas fa-bars" id="sidebar_btn"></i>
+    </label>
+    <div class="left_area">
+      <h3>Online Exam</h3>
+    </div>
+    <div class="right_area">
+      <a href="/logout" class="logout_btn" style="border-radius: 0px;">Logout</a>
+      <button id="theme-toggle" style="margin-left: 20px; padding: 5px; border: none; cursor: pointer; background: var(--accent-color); color: white; border-radius: 3px;">
+        Superhero Theme
+      </button>
+    </div>
+  </header>
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <center>
+      <img src="{% static 'image/student.png' %}" class="profile_image" alt="">
+      <h4>{{request.user.first_name}}</h4>
+      <h6 style="color: #fff;">( Student )</h6>
+    </center>
+    <a href="/student/student-dashboard"><i class="fas fa-tachometer-alt"></i><span>Dashboard</span></a>
+    <a href="/student/student-exam"><i class="fas fa-book"></i><span>Examination</span></a>
+    <a href="/student/student-marks"><i class="fas fa-sort-numeric-up"></i><span>My Marks</span></a>
+  </div>
+  <!-- Content -->
+  <div class="content">
+    <br><br><br><br><br>
+    {% block content %}
+    {% endblock content %}
+    <br><br><br>
+    {% include "exam/footer.html" %}
+  </div>
+  <!-- JavaScript for Theme Switching -->
+  <script>
+    const themeToggle = document.getElementById("theme-toggle");
+    const body = document.body;
+
+    // Load saved theme from localStorage
+    const savedTheme = localStorage.getItem("theme");
+    if (savedTheme) {
+      body.classList.add(savedTheme);
+    }
+
+    themeToggle.addEventListener("click", () => {
+      if (body.classList.contains("superhero-theme")) {
+        body.classList.remove("superhero-theme");
+        localStorage.setItem("theme", "");
+      } else {
+        body.classList.add("superhero-theme");
+        localStorage.setItem("theme", "superhero-theme");
+      }
+    });
+  </script>
+</body>
+
+</html>

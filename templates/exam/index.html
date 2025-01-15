@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en" dir="ltr">
+
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+  }
+
+  .jumbotron {
+    margin-bottom: 0;
+    background: url('/static/image/DALL.webp') no-repeat center center;
+    background-size: cover;
+    color: white;
+    padding: 50px 0;
+  }
+
+  .jumbotron h2 {
+    font-size: 3rem;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+  }
+
+  .jumbotron p {
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.6);
+  }
+
+  .btn-info {
+    transition: all 0.3s ease;
+    padding: 15px 30px;
+    border-radius: 5px;
+  }
+
+  .btn-info:hover {
+    background-color: #0056b3;
+    transform: scale(1.1);
+  }
+
+  .features-list {
+    list-style: none;
+    padding: 0;
+    text-align: center;
+  }
+
+  .features-list li {
+    margin: 10px 0;
+    font-size: 1.2rem;
+    color: #000;
+  }
+
+  .features-list i {
+    color: #000;
+    margin-right: 10px;
+  }
+
+  .testimonial {
+    background-color: #f8f9fa;
+    padding: 30px 15px;
+    text-align: center;
+  }
+
+  .testimonial h3 {
+    margin-bottom: 20px;
+    color: #343a40;
+  }
+
+  .testimonial p {
+    font-style: italic;
+    color: #6c757d;
+  }
+</style>
+
+<body>
+  {% include "exam/navbar.html" %}
+
+  <br>
+
+  <section id="section-jumbotron" class="jumbotron jumbotron-fluid d-flex justify-content-center align-items-center">
+    <div class="container text-center">
+      <h2 class="display-3">Student Exam Query System </h2>
+      <p class="display-4 d-none d-sm-block">Attend your examinations online!</p>
+      <p class="lead">Sign up now to start your first online examination</p>
+
+      <p><strong>Start Your Journey Here:</strong></p>
+      <a href="/student/studentsignup" class="btn btn-lg btn-info">
+        <i class="fa fa-graduation-cap" aria-hidden="true"></i> Sign Up as Student
+      </a>
+
+      <br><br>
+
+      <ul class="features-list">
+        <li><i class="fa fa-check-circle"></i> Real-time Exam Monitoring</li>
+        <li><i class="fa fa-check-circle"></i> Instant Feedback</li>
+        <li><i class="fa fa-check-circle"></i> Secure & Reliable</li>
+      </ul>
+
+      <br><br>
+    </div>
+  </section>
+
+  <section class="testimonial">
+    <div class="container">
+      <h3>What Our Users Say</h3>
+      <p>"This platform has revolutionized the way I take exams. It's simple, secure, and efficient!"</p>
+      <p>- Alex Johnson, Student</p>
+    </div>
+  </section>
+
+  {% include "exam/footer.html" %}
+</body>
+
+</html>
