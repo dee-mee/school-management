@@ -1,4 +1,4 @@
-{% extends 'teacher/teacherbase.html' %}
+{% extends 'exam/adminbase.html' %}
 {% load widget_tweaks %}
 {% block content %}
 <head>
@@ -6,49 +6,129 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
-  <style>
-       <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
-  a:link {
-        text-decoration: none;
-      }
-    
-  </style>
+    <style>
+        a:link {
+            text-decoration: none;
+        }
+        .hidden {
+            display: none;
+        }
+    </style>
 </head>
+
 <h2 style="text-align:center;">Add Question</h2>
 <form method="POST" autocomplete="off" style="margin:100px;margin-top: 0px;">
-    {%csrf_token%}
+    {% csrf_token %}
+
     <div class="form-group">
-        <label for="question">Course</label>
-      {% render_field questionForm.courseID|attr:'required:true' class="form-control"  %}
-        <br>
-
-      <label for="question">Question</label>
-      {% render_field questionForm.question|attr:'required:true' class="form-control" placeholder="Example: What is the relation calculus?" %}
-        <br>
-      <label for="question_number">Marks</label>
-      {% render_field questionForm.marks|attr:'required:true' class="form-control" placeholder="Example: 5" %}
-        <br>
-      <label for="option1">Option 1</label>
-      {% render_field questionForm.option1|attr:'required:true' class="form-control" placeholder="Example: It is a kind of procedural language" %}
-        <br>
-      <label for="option2">Option 2</label>
-      {% render_field questionForm.option2|attr:'required:true' class="form-control" placeholder="Example: It is a non-procedural language" %}
-        <br>
-      <label for="option3">Option 3</label>
-      {% render_field questionForm.option3|attr:'required:true' class="form-control" placeholder="Example: It is a high-level language" %}
-        <br>
-      <label for="option4">Option 4</label>
-      {% render_field questionForm.option4|attr:'required:true' class="form-control" placeholder="Example: It is Data Definition language" %}
-        <br>
-      <label for="answer">Correct Answer</label>
-      {% render_field questionForm.answer|attr:'required:true' class="form-control" %}
+        <label for="course">Course</label>
+        {% render_field questionForm.courseID|attr:'required:true' class="form-control" %}
     </div>
-    
 
-    <button type="submit" class="btn btn-success" style="border-radius: 0%;">Submit Question</button>
-  </form>
-<br><br><br>
+    <div class="form-group">
+        <label for="question_type">Question Type</label>
+        {% render_field questionForm.question_type|attr:'required:true' class="form-control" id="question_type" %}
+    </div>
+
+    <div class="form-group">
+        <label for="question">Question</label>
+        {% render_field questionForm.question|attr:'required:true' class="form-control" placeholder="Enter your question here" %}
+    </div>
+
+    <div class="form-group">
+        <label for="marks">Marks</label>
+        {% render_field questionForm.marks|attr:'required:true' class="form-control" placeholder="Example: 5" %}
+    </div>
+
+    <!-- MCQ specific fields -->
+    <div id="mcq-fields">
+        <div class="form-group">
+            <label for="option1">Option 1</label>
+            {% render_field questionForm.option1 class="form-control mcq-field" placeholder="Enter option 1" %}
+        </div>
+
+        <div class="form-group">
+            <label for="option2">Option 2</label>
+            {% render_field questionForm.option2 class="form-control mcq-field" placeholder="Enter option 2" %}
+        </div>
+
+        <div class="form-group">
+            <label for="option3">Option 3</label>
+            {% render_field questionForm.option3 class="form-control mcq-field" placeholder="Enter option 3" %}
+        </div>
+
+        <div class="form-group">
+            <label for="option4">Option 4</label>
+            {% render_field questionForm.option4 class="form-control mcq-field" placeholder="Enter option 4" %}
+        </div>
+
+        <div class="form-group">
+            <label for="mcq_answer">Correct Answer</label>
+            {% render_field questionForm.mcq_answer class="form-control mcq-field" %}
+        </div>
+    </div>
+
+    <!-- Essay/Short Answer specific fields -->
+    <div id="text-answer-fields" class="hidden">
+        <div class="form-group">
+            <label for="model_answer">Model Answer</label>
+            {% render_field questionForm.model_answer class="form-control" placeholder="Enter the model answer or grading rubric" %}
+        </div>
+    </div>
+
+    <button type="submit" class="btn btn-success" style="border-radius:0px;">Submit Question</button>
+</form>
+
+<script>
+$(document).ready(function() {
+    function toggleFields() {
+        var questionType = $('#question_type').val();
+        if (questionType === 'MCQ') {
+            $('#mcq-fields').removeClass('hidden');
+            $('#text-answer-fields').addClass('hidden');
+            $('.mcq-field').attr('required', true);
+            $('#id_model_answer').attr('required', false);
+        } else {
+            $('#mcq-fields').addClass('hidden');
+            $('#text-answer-fields').removeClass('hidden');
+            $('.mcq-field').attr('required', false);
+            $('#id_model_answer').attr('required', true);
+        }
+    }
+
+    // Run on page load
+    toggleFields();
+
+    // Run when question type changes
+    $('#question_type').change(toggleFields);
+
+    // Form validation
+    $('form').submit(function(e) {
+        var questionType = $('#question_type').val();
+        if (questionType === 'MCQ') {
+            // Validate MCQ fields
+            var mcqFields = $('.mcq-field');
+            var valid = true;
+            mcqFields.each(function() {
+                if (!$(this).val()) {
+                    valid = false;
+                    $(this).addClass('is-invalid');
+                }
+            });
+            if (!valid) {
+                e.preventDefault();
+                alert('Please fill in all MCQ options and correct answer');
+            }
+        } else {
+            // Validate model answer
+            if (!$('#id_model_answer').val()) {
+                e.preventDefault();
+                alert('Please provide a model answer or grading rubric');
+                $('#id_model_answer').addClass('is-invalid');
+            }
+        }
+    });
+});
+</script>
+
 {% endblock content %}

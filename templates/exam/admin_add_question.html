@@ -6,49 +6,206 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
-  <style>
-       <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
-  a:link {
-        text-decoration: none;
-      }
-    
-  </style>
+    <style>
+        a:link {
+            text-decoration: none;
+        }
+        .hidden {
+            display: none;
+        }
+        /* Grading Rubric Table Styling */
+        .rubric-table {
+            margin: 20px auto; /* Center the table */
+            width: 90%; /* Set the width of the table */
+            border-collapse: collapse; /* Remove gaps between table cells */
+            font-family: Arial, sans-serif;
+            font-size: 14px;
+        }
+
+        /* Table Borders */
+        .rubric-table th,
+        .rubric-table td {
+            border: 2px solid #000; /* Solid black border */
+            padding: 8px; /* Add padding to cells */
+            text-align: center; /* Center-align text */
+        }
+
+        /* Table Header */
+        .rubric-table th {
+            background-color: #f2f2f2; /* Light grey background for header */
+            color: #333; /* Darker text color */
+            font-weight: bold;
+        }
+
+        /* Zebra Stripes for Rows */
+        .rubric-table tr:nth-child(even) {
+            background-color: #f9f9f9; /* Light grey for alternate rows */
+        }
+
+        .rubric-table tr:hover {
+            background-color: #f1f1f1; /* Highlight on hover */
+        }
+
+        /* Title Styling */
+        .rubric-title {
+            text-align: center; /* Center-align the title */
+            margin: 20px auto; /* Add spacing around the title */
+            font-size: 18px;
+            font-weight: bold;
+            color: #333;
+            text-decoration: underline;
+        }
+    </style>
 </head>
+
 <h2 style="text-align:center;">Add Question</h2>
 <form method="POST" autocomplete="off" style="margin:100px;margin-top: 0px;">
-    {%csrf_token%}
-    <div class="form-group">
-        <label for="question">Course</label>
-      {% render_field questionForm.courseID|attr:'required:true' class="form-control"  %}
-        <br>
+    {% csrf_token %}
 
-      <label for="question">Question</label>
-      {% render_field questionForm.question|attr:'required:true' class="form-control" placeholder="Example: Which one of the following is not a phase of Prototyping Model?" %}
-        <br>
-      <label for="question_number">Marks</label>
-      {% render_field questionForm.marks|attr:'required:true' class="form-control" placeholder="Example: 5" %}
-        <br>
-      <label for="option1">Option 1</label>
-      {% render_field questionForm.option1|attr:'required:true' class="form-control" placeholder="Example: Quick Design" %}
-        <br>
-      <label for="option2">Option 2</label>
-      {% render_field questionForm.option2|attr:'required:true' class="form-control" placeholder="Example: Coding" %}
-        <br>
-      <label for="option3">Option 3</label>
-      {% render_field questionForm.option3|attr:'required:true' class="form-control" placeholder="Example: Prototype Refinement" %}
-        <br>
-      <label for="option4">Option 4</label>
-      {% render_field questionForm.option4|attr:'required:true' class="form-control" placeholder="Example: Engineer Product" %}
-        <br>
-      <label for="answer">Correct Answer</label>
-      {% render_field questionForm.answer|attr:'required:true' class="form-control" %}
+    <div class="form-group">
+        <label for="course">Course</label>
+        {% render_field questionForm.courseID|attr:'required:true' class="form-control" %}
     </div>
-    
+
+    <div class="form-group">
+        <label for="question_type">Question Type</label>
+        {% render_field questionForm.question_type|attr:'required:true' class="form-control" id="question_type" %}
+    </div>
+
+    <div class="form-group">
+        <label for="question">Question</label>
+        {% render_field questionForm.question|attr:'required:true' class="form-control" placeholder="Enter your question here" %}
+    </div>
+
+    <div class="form-group">
+        <label for="marks">Marks</label>
+        {% render_field questionForm.marks|attr:'required:true' class="form-control" placeholder="Example: 5" %}
+    </div>
+
+    <!-- MCQ specific fields -->
+    <div id="mcq-fields">
+        <div class="form-group">
+            <label for="option1">Option 1</label>
+            {% render_field questionForm.option1 class="form-control mcq-field" placeholder="Enter option 1" %}
+        </div>
+
+        <div class="form-group">
+            <label for="option2">Option 2</label>
+            {% render_field questionForm.option2 class="form-control mcq-field" placeholder="Enter option 2" %}
+        </div>
+
+        <div class="form-group">
+            <label for="option3">Option 3</label>
+            {% render_field questionForm.option3 class="form-control mcq-field" placeholder="Enter option 3" %}
+        </div>
+
+        <div class="form-group">
+            <label for="option4">Option 4</label>
+            {% render_field questionForm.option4 class="form-control mcq-field" placeholder="Enter option 4" %}
+        </div>
+
+        <div class="form-group">
+            <label for="mcq_answer">Correct Answer</label>
+            {% render_field questionForm.mcq_answer class="form-control mcq-field" %}
+        </div>
+    </div>
+
+    <!-- Essay/Short Answer specific fields -->
+    <div id="text-answer-fields" class="hidden">
+        <div class="form-group">
+            <label for="model_answer">Model Answer</label>
+            {% render_field questionForm.model_answer class="form-control" placeholder="Enter the model answer or grading rubric" %}
+        </div>
+    </div>
 
     <button type="submit" class="btn btn-success" style="border-radius:0px;">Submit Question</button>
-  </form>
-<br><br><br>
+</form>
+
+<h3 class="rubric-title">Grading Rubric</h3>
+<table class="rubric-table">
+    <thead>
+        <tr>
+            <th>Criteria</th>
+            <th>Excellent (10 points)</th>
+            <th>Good (8 points)</th>
+            <th>Fair (6 points)</th>
+            <th>Poor (4 points)</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>Functionality</td>
+            <td>All features, including adding questions, dynamic form handling, and validation, work flawlessly.</td>
+            <td>Most features work, but some minor bugs or issues exist.</td>
+            <td>Basic functionality implemented; significant issues in key features.</td>
+            <td>Minimal functionality; most features are incomplete or non-functional.</td>
+        </tr>
+        <tr>
+            <td>Dynamic Form Behavior</td>
+            <td>JavaScript dynamically updates the form based on question type without errors; validation is thorough.</td>
+            <td>Dynamic form behavior is mostly correct but with minor glitches or limited validation.</td>
+            <td>Limited dynamic behavior; validation is inconsistent or partially implemented.</td>
+            <td>No dynamic form handling; fields do not adjust based on input or type.</td>
+        </tr>
+    </tbody>
+</table>
+
+<p style="text-align:center;">
+    <a href="{% url 'grading_rubric' %}" class="btn btn-info" style="border-radius:0px;" target="_blank">
+        View Grading Rubric
+    </a>
+</p>
+
+<script>
+$(document).ready(function() {
+    function toggleFields() {
+        var questionType = $('#question_type').val();
+        if (questionType === 'MCQ') {
+            $('#mcq-fields').removeClass('hidden');
+            $('#text-answer-fields').addClass('hidden');
+            $('.mcq-field').attr('required', true);
+            $('#id_model_answer').attr('required', false);
+        } else {
+            $('#mcq-fields').addClass('hidden');
+            $('#text-answer-fields').removeClass('hidden');
+            $('.mcq-field').attr('required', false);
+            $('#id_model_answer').attr('required', true);
+        }
+    }
+
+    // Run on page load
+    toggleFields();
+
+    // Run when question type changes
+    $('#question_type').change(toggleFields);
+
+    // Form validation
+    $('form').submit(function(e) {
+        var questionType = $('#question_type').val();
+        if (questionType === 'MCQ') {
+            // Validate MCQ fields
+            var mcqFields = $('.mcq-field');
+            var valid = true;
+            mcqFields.each(function() {
+                if (!$(this).val()) {
+                    valid = false;
+                    $(this).addClass('is-invalid');
+                }
+            });
+            if (!valid) {
+                e.preventDefault();
+                alert('Please fill in all MCQ options and correct answer');
+            }
+        } else {
+            // Validate model answer
+            if (!$('#id_model_answer').val()) {
+                e.preventDefault();
+                alert('Please provide a model answer or grading rubric');
+                $('#id_model_answer').addClass('is-invalid');
+            }
+        }
+    });
+});
+</script>
+
 {% endblock content %}

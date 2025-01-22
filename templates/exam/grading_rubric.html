@@ -1,0 +1,25 @@
+{% extends 'exam/adminbase.html' %}
+{% block content %}
+<h2>Grading Rubric</h2>
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Criteria</th>
+            <th>Excellent (10 points)</th>
+            <th>Good (8 points)</th>
+            <th>Fair (6 points)</th>
+            <th>Poor (4 points)</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>Functionality</td>
+            <td>All features, including adding questions, dynamic form handling, and validation, work flawlessly.</td>
+            <td>Most features work, but some minor bugs or issues exist.</td>
+            <td>Basic functionality implemented; significant issues in key features.</td>
+            <td>Minimal functionality; most features are incomplete or non-functional.</td>
+        </tr>
+        <!-- Add more rows for other criteria -->
+    </tbody>
+</table>
+{% endblock content %}

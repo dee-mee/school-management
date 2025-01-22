@@ -294,3 +294,6 @@ def contactus_view(request):
     return render(request, 'exam/contactus.html', {'form':sub})
 
 
+
+def grading_rubric(request):
+    return render(request, 'exam/grading_rubric.html')

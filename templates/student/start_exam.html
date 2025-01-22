@@ -1,85 +1,175 @@
 {% extends 'student/studentbase.html' %}
 {% block content %}
-{%load static%}
+{% load static %}
 
 <head>
-  <link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
-  <script src="//netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>
-  <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
-
-
+    <link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+    <script src="//netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>
+    <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+    <style>
+        .essay-answer {
+            min-height: 150px;
+            resize: vertical;
+        }
+        .short-answer {
+            min-height: 100px;
+            resize: vertical;
+        }
+        .word-count {
+            color: #666;
+            font-size: 0.9em;
+            margin-top: 5px;
+        }
+        .word-count.exceeded {
+            color: red;
+        }
+    </style>
 </head>
 
-
 <div class="jumbotron my-4">
+    <form class="form" autocomplete="off" onsubmit="return validateForm()" action="/student/calculate-marks" method="POST">
+        {% csrf_token %}
+        <h2 style="text-align: center;">Course: {{course.course_name}}</h2>
 
-  <form class="form" autocomplete="off" onsubmit="return saveAns()"  action="/student/calculate-marks" method="POST">
-    {% csrf_token %}
-    <h2 style="text-align: center;">Course: {{course.course_name}}</h2>
-    {% for q in questions%}
-    <h3 class="text-danger">{{ forloop.counter }}. {{q.question}}</h3><h4 style="text-align: right;">[{{q.marks}} Marks]</h4>
-    
-        <input type="hidden" name="csrfmiddlewaretoken" value="C24rUotmdHawVQJL3KrqiWxvti8UffOFYUc8TRbZtLt36AVLdP3jbkzUVe3beRAa">
-        
-        
-          <div class="form-check mx-4">
-            <input class="form-check-input" type="radio" name="{{ forloop.counter }}" id="{{q.option1}}" value="Option1">
-            <label class="form-check-label" for="option1">
-              {{q.option1}}
-            </label>
-          </div>
+        {% for q in questions %}
+        <div class="question-container" data-question-type="{{ q.question_type }}">
+            <h3 class="text-danger">{{ forloop.counter }}. {{q.question}}</h3>
+            <h4 style="text-align: right;">[{{q.marks}} Marks]</h4>
 
-        
-          <div class="form-check mx-4">
-            <input class="form-check-input" type="radio" name="{{ forloop.counter }}" id="{{q.option2}}" value="Option2">
-            <label class="form-check-label" for="option2">
-              {{q.option2}}
-            </label>
-          </div>
+            {% if q.question_type == 'MCQ' %}
+            <!-- MCQ Questions -->
+<div class="mcq-options">
+    <div class="form-check mx-4">
+        <input class="form-check-input" type="radio" name="{{ forloop.counter }}"
+               id="{{q.option1}}" value="{{q.option1}}">
+        <label class="form-check-label" for="option1">{{q.option1}}</label>
+    </div>
+    <div class="form-check mx-4">
+        <input class="form-check-input" type="radio" name="{{ forloop.counter }}"
+               id="{{q.option2}}" value="{{q.option2}}">
+        <label class="form-check-label" for="option2">{{q.option2}}</label>
+    </div>
+    <div class="form-check mx-4">
+        <input class="form-check-input" type="radio" name="{{ forloop.counter }}"
+               id="{{q.option3}}" value="{{q.option3}}">
+        <label class="form-check-label" for="option3">{{q.option3}}</label>
+    </div>
+    <div class="form-check mx-4">
+        <input class="form-check-input" type="radio" name="{{ forloop.counter }}"
+               id="{{q.option4}}" value="{{q.option4}}">
+        <label class="form-check-label" for="option4">{{q.option4}}</label>
+    </div>
+</div>
 
-        
-          <div class="form-check mx-4">
-            <input class="form-check-input" type="radio" name="{{ forloop.counter }}" id="{{q.option3}}" value="Option3">
-            <label class="form-check-label" for="option3">
-              {{q.option3}}
-            </label>
-          </div>
+            {% elif q.question_type == 'ESSAY' %}
+            <!-- Essay Questions -->
+            <div class="essay-container">
+                <textarea class="form-control essay-answer" name="{{ forloop.counter }}_essay"
+                          placeholder="Enter your essay response here..."
+                          data-max-words="500"></textarea>
+                <div class="word-count">Words: 0/500</div>
+            </div>
 
-        
-          <div class="form-check mx-4">
-            <input class="form-check-input" type="radio" name="{{ forloop.counter }}" id="{{q.option4}}" value="Option4">
-            <label class="form-check-label" for="option4">
-              {{q.option4}}
-            </label>
-          </div>
-
+            {% else %}
+            <!-- Short Answer Questions -->
+            <div class="short-answer-container">
+                <textarea class="form-control short-answer" name="{{ forloop.counter }}_short"
+                          placeholder="Enter your answer here..."
+                          data-max-words="100"></textarea>
+                <div class="word-count">Words: 0/100</div>
+            </div>
+            {% endif %}
+        </div>
+        <hr>
         {% endfor %}
-        <input class="btn btn-success btn-lg" style="border-radius: 0%;"  type="submit" value="Submit Answers">  
+
+        <input class="btn btn-success btn-lg" style="border-radius: 0%;" type="submit" value="Submit Answers">
     </form>
-  </div>
+</div>
 
-<script> 
-    function saveAns(){  
-
-        var ele = document.getElementsByTagName('input'); 
-        for(i = 0; i < ele.length; i++) { 
-            if(ele[i].type="radio") { 
-                if(ele[i].checked){        
-                  setCookie(ele[i].name,ele[i].value,3)
-                }
-            } 
-        } 
-          
-    }
-    
-    function setCookie(cname, cvalue, exdays) {
-  var d = new Date();
-  d.setTime(d.getTime() + (exdays*24*60*60*1000));
-  var expires = "expires="+ d.toUTCString();
-  document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+<script>
+function countWords(str) {
+    return str.trim().split(/\s+/).filter(word => word.length > 0).length;
 }
 
-</script> 
+function updateWordCount(textarea) {
+    const maxWords = parseInt(textarea.getAttribute('data-max-words'));
+    const wordCount = countWords(textarea.value);
+    const countDisplay = textarea.nextElementSibling;
+
+    countDisplay.textContent = `Words: ${wordCount}/${maxWords}`;
+    if (wordCount > maxWords) {
+        countDisplay.classList.add('exceeded');
+    } else {
+        countDisplay.classList.remove('exceeded');
+    }
+}
+
+function saveAns() {
+    document.querySelectorAll('.question-container').forEach(container => {
+        const questionType = container.dataset.questionType;
+        if (questionType === 'MCQ') {
+            const selected = container.querySelector('input[type="radio"]:checked');
+            if (selected) {
+                setCookie(selected.name, selected.value, 3);
+            }
+        } else {
+            const textarea = container.querySelector('textarea');
+            if (textarea) {
+                setCookie(textarea.name, textarea.value, 3);
+            }
+        }
+    });
+}
+
+function validateForm() {
+    let isValid = true;
+
+    // Validate MCQ questions
+    document.querySelectorAll('.mcq-options').forEach(mcqContainer => {
+        const questionNum = mcqContainer.querySelector('input[type="radio"]').name;
+        const answered = mcqContainer.querySelector('input[type="radio"]:checked');
+        if (!answered) {
+            alert(`Please answer question ${questionNum}`);
+            isValid = false;
+        }
+    });
+
+    // Validate Essay and Short Answer questions
+    document.querySelectorAll('textarea').forEach(textarea => {
+        const words = countWords(textarea.value);
+        const maxWords = parseInt(textarea.getAttribute('data-max-words'));
+
+        if (words === 0) {
+            alert(`Please provide an answer for question ${textarea.name.split('_')[0]}`);
+            isValid = false;
+        } else if (words > maxWords) {
+            alert(`Your answer for question ${textarea.name.split('_')[0]} exceeds the maximum word limit`);
+            isValid = false;
+        }
+    });
+
+    if (isValid) {
+        saveAns();
+    }
+    return isValid;
+}
+
+function setCookie(cname, cvalue, exdays) {
+    const d = new Date();
+    d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
+    const expires = "expires=" + d.toUTCString();
+    document.cookie = cname + "=" + encodeURIComponent(cvalue) + ";" + expires + ";path=/";
+}
+
+// Add event listeners for word counting
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('textarea').forEach(textarea => {
+        textarea.addEventListener('input', () => updateWordCount(textarea));
+        updateWordCount(textarea); // Initial count
+    });
+});
+</script>
 
 <br><br><br><br><br><br>
 {% endblock content %}
